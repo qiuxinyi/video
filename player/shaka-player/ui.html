@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <!-- Shaka Player ui compiled library: -->
+    <script src="dist/shaka-player.ui.js"></script>
+    <!-- Shaka Player ui compiled library default CSS: -->
+    <link rel="stylesheet" type="text/css" href="dist/controls.css">
+    <!-- IMA HTML5 SDK (for serving Client Side ads): -->
+    <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    <!-- IMA DAI SDK (for serving Server Side ads): -->
+    <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+    <!-- Your application source: -->
+
+    <!-- Chromecast SDK (if you want Chromecast support for your app): -->
+<!--    <script defer src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>-->
+    <!-- Your application source: -->
+    <script src="ui.js"></script>
+  </head>
+  <body>
+    <!-- The data-shaka-player-container tag will make the UI library place the controls in this div.
+         The data-shaka-player-cast-receiver-id tag allows you to provide a Cast Application ID that
+           the cast button will cast to; the value provided here is the sample cast receiver. -->
+    <div data-shaka-player-container style="max-width:40em"
+         data-shaka-player-cast-receiver-id="1BA79154">
+      <video autoplay data-shaka-player id="video" style="width:100%;height:100%">
+        <!-- Try this first -->
+<!--        <source src="https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd"/>-->
+        <!-- Try this if the first one has failed -->
+<!--        <source src="https://storage.googleapis.com/shaka-demo-assets/angel-one-hls-apple/master.m3u8"/>-->
+      </video>
+    </div>
+  </body>
+</html>
