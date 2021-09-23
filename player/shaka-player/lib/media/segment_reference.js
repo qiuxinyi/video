@@ -191,6 +191,20 @@ shaka.media.SegmentReference = class {
 
     /** @type {?string} */
     this.tilesLayout = tilesLayout;
+
+    /** @type {?string} */
+    this.yecaddinfo = '';
+  }
+
+  /**
+   * 1
+   *
+   * @return {?string}
+   * @export
+   */
+  changeyecinfo(bufferstate) {
+    this.yecaddinfo='?mode='+bufferstate.toString();
+    return this.yecaddinfo;
   }
 
   /**
@@ -200,7 +214,12 @@ shaka.media.SegmentReference = class {
    * @export
    */
   getUris() {
-    return this.getUrisInner();
+    // yec add
+    const yecurl=[];
+    yecurl[0]=this.getUrisInner()[0]+this.yecaddinfo;
+    return yecurl;
+    // yec add
+    // return this.getUrisInner();
   }
 
   /**

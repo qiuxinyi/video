@@ -10,7 +10,7 @@
  */
 
 goog.provide('shaka.media.StreamingEngine');
-
+goog.require('shaka.media.BufferingObserver');
 goog.require('goog.asserts');
 goog.require('shaka.log');
 goog.require('shaka.media.InitSegmentReference');
@@ -1011,9 +1011,16 @@ shaka.media.StreamingEngine = class {
 
     const bufferEnd =
         this.playerInterface_.mediaSourceEngine.bufferEnd(mediaState.type);
+    // yec add
+    const myobserver =
+        this.playerInterface_.myobserver;
+    const State = shaka.media.BufferingObserver.State;
+    const bufferstate =
+        myobserver.getState() == State.STARVING?1:2;
+    // yec add
     // reference中包含了请求url等信息
     const reference = this.getSegmentReferenceNeeded_(
-        mediaState, presentationTime, bufferEnd);
+        mediaState, presentationTime, bufferEnd, bufferstate);
     if (!reference) {
       // The segment could not be found, does not exist, or is not available.
       // In any case just try again... if the manifest is incomplete or is not
@@ -1096,7 +1103,11 @@ shaka.media.StreamingEngine = class {
    *   not exist, or is not available.
    * @private
    */
-  getSegmentReferenceNeeded_(mediaState, presentationTime, bufferEnd) {
+  getSegmentReferenceNeeded_(
+      mediaState,
+      presentationTime,
+      bufferEnd,
+      bufferstate) {
     const logPrefix = shaka.media.StreamingEngine.logPrefix_(mediaState);
     goog.asserts.assert(
         mediaState.stream.segmentIndex,
@@ -1106,7 +1117,9 @@ shaka.media.StreamingEngine = class {
       // Something is buffered from the same Stream.  Use the current position
       // in the segment index.  This is updated via next() after each segment is
       // appended.
-      return mediaState.segmentIterator.current();
+      const ref = mediaState.segmentIterator.current();
+      ref.changeyecinfo(bufferstate);
+      return ref;
     } else if (mediaState.lastSegmentReference || bufferEnd) {
       // Something is buffered from another Stream.
       const time = mediaState.lastSegmentReference ?
@@ -1123,6 +1136,7 @@ shaka.media.StreamingEngine = class {
       if (ref == null) {
         shaka.log.warning(logPrefix, 'cannot find segment', 'endTime:', time);
       }
+      ref.changeyecinfo(bufferstate);
       return ref;
     } else {
       // Nothing is buffered.  Start at the playhead time.
@@ -1159,6 +1173,7 @@ shaka.media.StreamingEngine = class {
             'lookupTime:', lookupTime,
             'presentationTime:', presentationTime);
       }
+      ref.changeyecinfo(bufferstate);
       return ref;
     }
   }
@@ -1936,7 +1951,8 @@ shaka.media.StreamingEngine = class {
  *   onError: function(!shaka.util.Error),
  *   onEvent: function(!Event),
  *   onManifestUpdate: function(),
- *   onSegmentAppended: function()
+ *   onSegmentAppended: function(),
+ *   myobserver: (?shaka.media.BufferingObserver|undefined)
  * }}
  *
  * @property {function():number} getPresentationTime
@@ -1957,7 +1973,8 @@ shaka.media.StreamingEngine = class {
  * @property {function()} onManifestUpdate
  *   Called when an embedded 'emsg' box should trigger a manifest update.
  * @property {function()} onSegmentAppended
- *   Called after a segment is successfully appended to a MediaSource.
+ *   yecadd
+ * @property {?shaka.media.BufferingObserver|undefined} myobserver
  */
 shaka.media.StreamingEngine.PlayerInterface;
 

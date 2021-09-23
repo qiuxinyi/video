@@ -2781,6 +2781,7 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
       onEvent: (event) => this.dispatchEvent(event),
       onManifestUpdate: () => this.onManifestUpdate_(),
       onSegmentAppended: () => this.onSegmentAppended_(),
+      myobserver: this.bufferObserver_,
     };
 
     return new shaka.media.StreamingEngine(this.manifest_, playerInterface);
