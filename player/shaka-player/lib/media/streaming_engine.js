@@ -1014,9 +1014,7 @@ shaka.media.StreamingEngine = class {
     // yec add
     const myobserver =
         this.playerInterface_.myobserver;
-    const State = shaka.media.BufferingObserver.State;
-    const bufferstate =
-        myobserver.getState() == State.STARVING?1:2;
+    const bufferstate = myobserver.mode;
     // yec add
     // reference中包含了请求url等信息
     const reference = this.getSegmentReferenceNeeded_(

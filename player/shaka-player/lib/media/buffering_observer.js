@@ -28,6 +28,8 @@ shaka.media.BufferingObserver = class {
     this.thresholds_ = new Map()
         .set(State.SATISFIED, thresholdWhenSatisfied)
         .set(State.STARVING, thresholdWhenStarving);
+    /** @type {number} */
+    this.mode = 1;
   }
 
   /**
@@ -67,7 +69,7 @@ shaka.media.BufferingObserver = class {
     const newState = (bufferedToEnd || bufferLead >= threshold) ?
                      (State.SATISFIED) :
                      (State.STARVING);
-
+    this.mode = bufferLead <= 5 ? 1:2;
     // Save the new state now so that calls to |getState| from any callbacks
     // will be accurate.
     this.previousState_ = newState;
