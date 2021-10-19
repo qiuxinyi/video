@@ -197,13 +197,15 @@ shaka.media.SegmentReference = class {
   }
 
   /**
-   * 1
+   * yec add it to change the uri
    *
    * @return {?string}
    * @export
    */
-  changeyecinfo(bufferstate) {
-    this.yecaddinfo='?mode='+bufferstate.toString();
+  changeyecinfo(bufferstate, targetrate, type) {
+    this.yecaddinfo = '?mode='+bufferstate.toString();
+    this.yecaddinfo += '&target_rate='+targetrate.toString();
+    this.yecaddinfo += '&player_type='+type.toString();
     return this.yecaddinfo;
   }
 

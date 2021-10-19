@@ -48,6 +48,7 @@ shaka.net.HttpFetchPlugin = class {
       method: request.method,
       signal: controller.signal,
       credentials: request.allowCrossSiteCredentials ? 'include' : undefined,
+      mode: 'no-cors',
     };
 
     /** @type {shaka.net.HttpFetchPlugin.AbortStatus} */

@@ -71,6 +71,15 @@ shaka.media.StreamingEngine = class {
     /** @private {number} */
     this.bufferingGoalScale_ = 1;
 
+    /** @private {number} */
+    this.myqoe = 7;
+
+    /** @private {number} */
+    this.qoesubcounter = 0;
+
+    /** @private {number} */
+    this.qoeaddcounter = 0;
+
     /** @private {?shaka.extern.Variant} */
     this.currentVariant_ = null;
 
@@ -1015,10 +1024,45 @@ shaka.media.StreamingEngine = class {
     const myobserver =
         this.playerInterface_.myobserver;
     const bufferstate = myobserver.mode;
+    const myviedo =
+        this.playerInterface_.myviedo;
+    const myuri =
+        this.playerInterface_.myuri;
+    const mybandwidth =
+        this.playerInterface_.getBandwidthEstimate();
+    shaka.log.debug('nowbandwidth', mybandwidth);
+    // 开始判断
+    let mywidth = myviedo['width'];
+    let myheight = myviedo['height'];
+    if (mywidth == 0 && myheight == 0) {
+      // 没有指定长和宽，那么就是视频的长和宽(分辨率)
+      mywidth = myviedo['videoWidth'];
+      myheight = myviedo['videoHeight'];
+    }
+    if (mywidth == 0 && myheight != 0) {
+      // 指定了宽没指定长,我们默认采取16:9
+      mywidth = myheight/9*16;
+    }
+    if (mywidth != 0 && myheight == 0) {
+      // 指定了长没指定宽,我们默认采取16:9
+      myheight = mywidth/16*9;
+    }
+    // 判断结束
+    // 打印出来看一看
+    shaka.log.debug('mywidth', mywidth);
+    shaka.log.debug('myheight', myheight);
+    // 根据窗口来判断设备种类
     // yec add
     // reference中包含了请求url等信息
     const reference = this.getSegmentReferenceNeeded_(
-        mediaState, presentationTime, bufferEnd, bufferstate);
+        mediaState,
+        presentationTime,
+        bufferEnd,
+        bufferstate,
+        mywidth,
+        myheight,
+        myuri,
+        mybandwidth);
     if (!reference) {
       // The segment could not be found, does not exist, or is not available.
       // In any case just try again... if the manifest is incomplete or is not
@@ -1105,18 +1149,133 @@ shaka.media.StreamingEngine = class {
       mediaState,
       presentationTime,
       bufferEnd,
-      bufferstate) {
+      bufferstate,
+      mywidth,
+      myheight,
+      myuri,
+      mybandwidth) {
     const logPrefix = shaka.media.StreamingEngine.logPrefix_(mediaState);
     goog.asserts.assert(
         mediaState.stream.segmentIndex,
         'segment index should have been generated already');
-
+    let targetrate = 0;
+    // yec add it
+    let type = 0;
+    const judge = myuri.substring(myuri.length-8, myuri.length-5);
+    if (judge == 'ion') {
+      // action
+      if (mywidth == 2560 && myheight == 1440) {
+        type = 1;
+        // exp((2000*x)/4891 + 88652/24455)
+        targetrate = Math.exp((2000*this.myqoe)/4891+88652/24455)*1024;
+      }
+      if (mywidth == 1920 && myheight == 1080) {
+        type = 2;
+        // exp((10000*x)/16611 + 16049/5537)
+        targetrate = Math.exp((10000*this.myqoe)/16611+16049/5537)*1024;
+      }
+      if (mywidth == 1280 && myheight == 720) {
+        type = 3;
+        // exp((10000*x)/16927 + 45966/16927)
+        targetrate = Math.exp((10000*this.myqoe)/16927+45966/16927)*1024;
+      }
+    }
+    if (judge == 'ood') {
+      // foods
+      if (mywidth == 2560 && myheight == 1440) {
+        // exp((5000*x)/12161 + 40761/12161)
+        type = 4;
+        targetrate = Math.exp((5000*this.myqoe)/12161+40761/12161)*1024;
+      }
+      if (mywidth == 1920 && myheight == 1080) {
+        type = 5;
+        // exp((2000*x)/3487 + 51723/17435)
+        targetrate = Math.exp((2000*this.myqoe)/3487+51723/17435)*1024;
+      }
+      if (mywidth == 1280 && myheight == 720) {
+        type = 6;
+        // exp((10000*x)/20071 + 58200/20071)
+        targetrate = Math.exp((10000*this.myqoe)/20071+58200/20071)*1024;
+      }
+    }
+    if (judge == 'bbb') {
+      // cartoons
+      if (mywidth == 2560 && myheight == 1440) {
+        type = 7;
+        // exp((10000*x)/18509 + 48633/18509)
+        targetrate = Math.exp((10000*this.myqoe)/18509+48633/18509)*1024;
+      }
+      if (mywidth == 1920 && myheight == 1080) {
+        type = 8;
+        // exp((10000*x)/18749 + 61618/18749)
+        targetrate = Math.exp((10000*this.myqoe)/18749+61618/18749)*1024;
+      }
+      if (mywidth == 1280 && myheight == 720) {
+        type = 9;
+        // exp((10000*x)/17551 + 50058/17551)
+        targetrate = Math.exp((10000*this.myqoe)/17551+50058/17551)*1024;
+      }
+    }
+    if (judge == 'rts') {
+      // sports
+      if (mywidth == 2560 && myheight == 1440) {
+        type = 10;
+        // exp((2500*x)/5219 + 77861/20876)
+        targetrate = Math.exp((2500*this.myqoe)/5219+77861/20876)*1024;
+      }
+      if (mywidth == 1920 && myheight == 1080) {
+        type = 11;
+        // exp((5000*x)/8309 + 29776/8309)
+        targetrate = Math.exp((5000*this.myqoe)/8309+29776/8309)*1024;
+      }
+      if (mywidth == 1280 && myheight == 720) {
+        type = 12;
+        // exp((5000*x)/8271 + 26461/8271)
+        targetrate = Math.exp((5000*this.myqoe)/8271+26461/8271)*1024;
+      }
+    }
+    console.log('type', type);
+    goog.asserts.assert(
+        targetrate> 0,
+        'target_rate must larger than 0');
+    console.log('target_rate', targetrate);
+    // qoe逻辑
+    // 带宽大于target_rate,使用单位bit/s，qoe加法逻辑
+    if (mybandwidth >= targetrate) {
+      // 如果qoe减法计数器大于0，则重置它
+      if (this.qoesubcounter > 0) {
+        this.qoesubcounter = 0;
+      }
+      // 如果qoe加法计数器大于等于1，则增加qoe
+      if (this.qoeaddcounter >= 1) {
+        this.myqoe = Math.min(this.myqoe+1, 9);
+        this.qoeaddcounter = 0;
+      } else {
+        // 如果qoe加法计数器为0，计数+1
+        this.qoeaddcounter++;
+      }
+    } else {
+      // qoe减法逻辑
+      if (this.qoeaddcounter > 0) {
+        this.qoesubcounter = 0;
+      }
+      if (this.qoesubcounter >= 1) {
+        this.myqoe = Math.max(this.myqoe-1, 5);
+        this.qoesubcounter = 0;
+      } else {
+        this.qoesubcounter++;
+      }
+    }
+    console.log('qoeaddcounter', this.qoeaddcounter);
+    console.log('qoesubcounter', this.qoesubcounter);
+    console.log('myqoe', this.myqoe);
+    // yec add it
     if (mediaState.segmentIterator) {
       // Something is buffered from the same Stream.  Use the current position
       // in the segment index.  This is updated via next() after each segment is
       // appended.
       const ref = mediaState.segmentIterator.current();
-      ref.changeyecinfo(bufferstate);
+      ref.changeyecinfo(bufferstate, targetrate, type);
       return ref;
     } else if (mediaState.lastSegmentReference || bufferEnd) {
       // Something is buffered from another Stream.
@@ -1134,7 +1293,7 @@ shaka.media.StreamingEngine = class {
       if (ref == null) {
         shaka.log.warning(logPrefix, 'cannot find segment', 'endTime:', time);
       }
-      ref.changeyecinfo(bufferstate);
+      ref.changeyecinfo(bufferstate, targetrate, type);
       return ref;
     } else {
       // Nothing is buffered.  Start at the playhead time.
@@ -1171,7 +1330,7 @@ shaka.media.StreamingEngine = class {
             'lookupTime:', lookupTime,
             'presentationTime:', presentationTime);
       }
-      ref.changeyecinfo(bufferstate);
+      ref.changeyecinfo(bufferstate, targetrate, type);
       return ref;
     }
   }
@@ -1950,7 +2109,9 @@ shaka.media.StreamingEngine = class {
  *   onEvent: function(!Event),
  *   onManifestUpdate: function(),
  *   onSegmentAppended: function(),
- *   myobserver: (?shaka.media.BufferingObserver|undefined)
+ *   myobserver: (?shaka.media.BufferingObserver|undefined),
+ *   myviedo: (?HTMLMediaElement|undefined),
+ *   myuri: (?string|undefined)
  * }}
  *
  * @property {function():number} getPresentationTime
@@ -1973,6 +2134,10 @@ shaka.media.StreamingEngine = class {
  * @property {function()} onSegmentAppended
  *   yecadd
  * @property {?shaka.media.BufferingObserver|undefined} myobserver
+ *   yecadd
+ * @property {?HTMLMediaElement|undefined} myviedo
+ *   yecadd
+ * @property {?string|undefined} myuri
  */
 shaka.media.StreamingEngine.PlayerInterface;
 
