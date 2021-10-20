@@ -2679,19 +2679,19 @@ shaka.hls.HlsParser = class {
    */
   makeNetworkRequest_(request, type) {
     // yec add
-    const myviedo =
-        this.playerInterface_.myviedo;
+    const myvideo =
+        this.playerInterface_.myvideo;
     const myuri =
         this.playerInterface_.myuri;
     const flowid =
         this.playerInterface_.myflowid;
     // 开始判断
-    let mywidth = myviedo['width'];
-    let myheight = myviedo['height'];
+    let mywidth = myvideo['width'];
+    let myheight = myvideo['height'];
     if (mywidth == 0 && myheight == 0) {
       // 没有指定长和宽，那么就是视频的长和宽(分辨率)
-      mywidth = myviedo['videoWidth'];
-      myheight = myviedo['videoHeight'];
+      mywidth = myvideo['videoWidth'];
+      myheight = myvideo['videoHeight'];
     }
     if (mywidth == 0 && myheight != 0) {
       // 指定了宽没指定长,我们默认采取16:9
@@ -2704,8 +2704,9 @@ shaka.hls.HlsParser = class {
     let targetrate = 0;
     // yec add it
     let mytype = 0;
-    const judge = myuri.substring(myuri.length-8, myuri.length-5);
-    if (judge == 'ion') {
+    const judge = myuri.split('/').pop().split('.')[0];
+    console.log('judge', judge);
+    if (judge == 'action') {
       // action
       if (mywidth == 2560 && myheight == 1440) {
         mytype = 1;
@@ -2723,7 +2724,7 @@ shaka.hls.HlsParser = class {
         targetrate = Math.exp((10000*this.myqoe)/16927+45966/16927)*1024;
       }
     }
-    if (judge == 'ood') {
+    if (judge == 'food') {
       // foods
       if (mywidth == 2560 && myheight == 1440) {
         // exp((5000*x)/12161 + 40761/12161)
@@ -2759,7 +2760,7 @@ shaka.hls.HlsParser = class {
         targetrate = Math.exp((10000*this.myqoe)/17551+50058/17551)*1024;
       }
     }
-    if (judge == 'rts') {
+    if (judge == 'sports') {
       // sports
       if (mywidth == 2560 && myheight == 1440) {
         mytype = 10;

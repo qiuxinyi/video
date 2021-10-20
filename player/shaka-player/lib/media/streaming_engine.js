@@ -1024,8 +1024,8 @@ shaka.media.StreamingEngine = class {
     const myobserver =
         this.playerInterface_.myobserver;
     const bufferstate = myobserver.mode;
-    const myviedo =
-        this.playerInterface_.myviedo;
+    const myvideo =
+        this.playerInterface_.myvideo;
     const myuri =
         this.playerInterface_.myuri;
     const mybandwidth =
@@ -1034,12 +1034,12 @@ shaka.media.StreamingEngine = class {
         this.playerInterface_.myflowid;
     shaka.log.debug('nowbandwidth', mybandwidth);
     // 开始判断
-    let mywidth = myviedo['width'];
-    let myheight = myviedo['height'];
+    let mywidth = myvideo['width'];
+    let myheight = myvideo['height'];
     if (mywidth == 0 && myheight == 0) {
       // 没有指定长和宽，那么就是视频的长和宽(分辨率)
-      mywidth = myviedo['videoWidth'];
-      myheight = myviedo['videoHeight'];
+      mywidth = myvideo['videoWidth'];
+      myheight = myvideo['videoHeight'];
     }
     if (mywidth == 0 && myheight != 0) {
       // 指定了宽没指定长,我们默认采取16:9
@@ -1158,6 +1158,7 @@ shaka.media.StreamingEngine = class {
       myuri,
       mybandwidth,
       flowid) {
+    console.log('myuri', myuri);
     const logPrefix = shaka.media.StreamingEngine.logPrefix_(mediaState);
     goog.asserts.assert(
         mediaState.stream.segmentIndex,
@@ -1165,8 +1166,9 @@ shaka.media.StreamingEngine = class {
     let targetrate = 0;
     // yec add it
     let type = 0;
-    const judge = myuri.substring(myuri.length-8, myuri.length-5);
-    if (judge == 'ion') {
+    const judge = myuri.split('/').pop().split('.')[0];
+    console.log('judge', judge);
+    if (judge == 'action') {
       // action
       if (mywidth == 2560 && myheight == 1440) {
         type = 1;
@@ -1184,7 +1186,7 @@ shaka.media.StreamingEngine = class {
         targetrate = Math.exp((10000*this.myqoe)/16927+45966/16927)*1024;
       }
     }
-    if (judge == 'ood') {
+    if (judge == 'food') {
       // foods
       if (mywidth == 2560 && myheight == 1440) {
         // exp((5000*x)/12161 + 40761/12161)
@@ -1220,7 +1222,7 @@ shaka.media.StreamingEngine = class {
         targetrate = Math.exp((10000*this.myqoe)/17551+50058/17551)*1024;
       }
     }
-    if (judge == 'rts') {
+    if (judge == 'sports') {
       // sports
       if (mywidth == 2560 && myheight == 1440) {
         type = 10;
@@ -2114,7 +2116,7 @@ shaka.media.StreamingEngine = class {
  *   onManifestUpdate: function(),
  *   onSegmentAppended: function(),
  *   myobserver: (?shaka.media.BufferingObserver|undefined),
- *   myviedo: (?HTMLMediaElement|undefined),
+ *   myvideo: (?HTMLMediaElement|undefined),
  *   myuri: (?string|undefined),
  *   myflowid: (?number|undefined)
  * }}
@@ -2140,7 +2142,7 @@ shaka.media.StreamingEngine = class {
  *   yecadd
  * @property {?shaka.media.BufferingObserver|undefined} myobserver
  *   yecadd
- * @property {?HTMLMediaElement|undefined} myviedo
+ * @property {?HTMLMediaElement|undefined} myvideo
  *   yecadd
  * @property {?string|undefined} myuri
  *   yecadd

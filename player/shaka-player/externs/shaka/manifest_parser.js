@@ -109,7 +109,7 @@ shaka.extern.ManifestParser = class {
  *   isAutoLowLatencyMode: function():boolean,
  *   enableLowLatencyMode: function(),
  *   myflowid: (?number|undefined),
- *   myviedo: (?HTMLMediaElement|undefined),
+ *   myvideo: (?HTMLMediaElement|undefined),
  *   myuri: (?string|undefined)
  * }}
  *
@@ -142,7 +142,7 @@ shaka.extern.ManifestParser = class {
  *   Enable low latency streaming mode.
  * @property {?number|undefined} myflowid
  *   yecadd
- * @property {?HTMLMediaElement|undefined} myviedo
+ * @property {?HTMLMediaElement|undefined} myvideo
  *   yecadd
  * @property {?string|undefined} myuri
  *   yecadd

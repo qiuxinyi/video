@@ -1684,7 +1684,7 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
         this.configure('streaming.lowLatencyMode', true);
       },
       myflowid: this.flowid,
-      myviedo: this.video_,
+      myvideo: this.video_,
       myuri: this.assetUri_,
     };
 
@@ -2787,7 +2787,7 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
       onManifestUpdate: () => this.onManifestUpdate_(),
       onSegmentAppended: () => this.onSegmentAppended_(),
       myobserver: this.bufferObserver_,
-      myviedo: this.video_,
+      myvideo: this.video_,
       myuri: this.assetUri_,
       myflowid: this.flowid,
     };
