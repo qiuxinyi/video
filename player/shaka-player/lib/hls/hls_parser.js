@@ -2708,17 +2708,17 @@ shaka.hls.HlsParser = class {
     console.log('judge', judge);
     if (judge == 'action') {
       // action
-      if (mywidth == 2560 && myheight == 1440) {
+      if (myheight >= 1440) {
         mytype = 1;
         // exp((2000*x)/4891 + 88652/24455)
         targetrate = Math.exp((2000*this.myqoe)/4891+88652/24455)*1024;
       }
-      if (mywidth == 1920 && myheight == 1080) {
+      if (myheight >= 1080 && myheight < 1440) {
         mytype = 2;
         // exp((10000*x)/16611 + 16049/5537)
         targetrate = Math.exp((10000*this.myqoe)/16611+16049/5537)*1024;
       }
-      if (mywidth == 1280 && myheight == 720) {
+      if (myheight < 1080) {
         mytype = 3;
         // exp((10000*x)/16927 + 45966/16927)
         targetrate = Math.exp((10000*this.myqoe)/16927+45966/16927)*1024;
@@ -2726,17 +2726,17 @@ shaka.hls.HlsParser = class {
     }
     if (judge == 'food') {
       // foods
-      if (mywidth == 2560 && myheight == 1440) {
+      if (myheight >= 1440) {
         // exp((5000*x)/12161 + 40761/12161)
         mytype = 4;
         targetrate = Math.exp((5000*this.myqoe)/12161+40761/12161)*1024;
       }
-      if (mywidth == 1920 && myheight == 1080) {
+      if (myheight >= 1080 && myheight < 1440) {
         mytype = 5;
         // exp((2000*x)/3487 + 51723/17435)
         targetrate = Math.exp((2000*this.myqoe)/3487+51723/17435)*1024;
       }
-      if (mywidth == 1280 && myheight == 720) {
+      if (myheight < 1080) {
         mytype = 6;
         // exp((10000*x)/20071 + 58200/20071)
         targetrate = Math.exp((10000*this.myqoe)/20071+58200/20071)*1024;
@@ -2744,17 +2744,17 @@ shaka.hls.HlsParser = class {
     }
     if (judge == 'bbb') {
       // cartoons
-      if (mywidth == 2560 && myheight == 1440) {
+      if (myheight >= 1440) {
         mytype = 7;
         // exp((10000*x)/18509 + 48633/18509)
         targetrate = Math.exp((10000*this.myqoe)/18509+48633/18509)*1024;
       }
-      if (mywidth == 1920 && myheight == 1080) {
+      if (myheight >= 1080 && myheight < 1440) {
         mytype = 8;
         // exp((10000*x)/18749 + 61618/18749)
         targetrate = Math.exp((10000*this.myqoe)/18749+61618/18749)*1024;
       }
-      if (mywidth == 1280 && myheight == 720) {
+      if (myheight < 1080) {
         mytype = 9;
         // exp((10000*x)/17551 + 50058/17551)
         targetrate = Math.exp((10000*this.myqoe)/17551+50058/17551)*1024;
@@ -2762,17 +2762,17 @@ shaka.hls.HlsParser = class {
     }
     if (judge == 'sports') {
       // sports
-      if (mywidth == 2560 && myheight == 1440) {
+      if (myheight >= 1440) {
         mytype = 10;
         // exp((2500*x)/5219 + 77861/20876)
         targetrate = Math.exp((2500*this.myqoe)/5219+77861/20876)*1024;
       }
-      if (mywidth == 1920 && myheight == 1080) {
+      if (myheight >= 1080 && myheight < 1440) {
         mytype = 11;
         // exp((5000*x)/8309 + 29776/8309)
         targetrate = Math.exp((5000*this.myqoe)/8309+29776/8309)*1024;
       }
-      if (mywidth == 1280 && myheight == 720) {
+      if (myheight < 1080) {
         mytype = 12;
         // exp((5000*x)/8271 + 26461/8271)
         targetrate = Math.exp((5000*this.myqoe)/8271+26461/8271)*1024;

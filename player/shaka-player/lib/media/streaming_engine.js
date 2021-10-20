@@ -1165,82 +1165,82 @@ shaka.media.StreamingEngine = class {
         'segment index should have been generated already');
     let targetrate = 0;
     // yec add it
-    let type = 0;
+    let mytype = 0;
     const judge = myuri.split('/').pop().split('.')[0];
     console.log('judge', judge);
     if (judge == 'action') {
       // action
-      if (mywidth == 2560 && myheight == 1440) {
-        type = 1;
+      if (myheight >= 1440) {
+        mytype = 1;
         // exp((2000*x)/4891 + 88652/24455)
         targetrate = Math.exp((2000*this.myqoe)/4891+88652/24455)*1024;
       }
-      if (mywidth == 1920 && myheight == 1080) {
-        type = 2;
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 2;
         // exp((10000*x)/16611 + 16049/5537)
         targetrate = Math.exp((10000*this.myqoe)/16611+16049/5537)*1024;
       }
-      if (mywidth == 1280 && myheight == 720) {
-        type = 3;
+      if (myheight < 1080) {
+        mytype = 3;
         // exp((10000*x)/16927 + 45966/16927)
         targetrate = Math.exp((10000*this.myqoe)/16927+45966/16927)*1024;
       }
     }
     if (judge == 'food') {
       // foods
-      if (mywidth == 2560 && myheight == 1440) {
+      if (myheight >= 1440) {
         // exp((5000*x)/12161 + 40761/12161)
-        type = 4;
+        mytype = 4;
         targetrate = Math.exp((5000*this.myqoe)/12161+40761/12161)*1024;
       }
-      if (mywidth == 1920 && myheight == 1080) {
-        type = 5;
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 5;
         // exp((2000*x)/3487 + 51723/17435)
         targetrate = Math.exp((2000*this.myqoe)/3487+51723/17435)*1024;
       }
-      if (mywidth == 1280 && myheight == 720) {
-        type = 6;
+      if (myheight < 1080) {
+        mytype = 6;
         // exp((10000*x)/20071 + 58200/20071)
         targetrate = Math.exp((10000*this.myqoe)/20071+58200/20071)*1024;
       }
     }
     if (judge == 'bbb') {
       // cartoons
-      if (mywidth == 2560 && myheight == 1440) {
-        type = 7;
+      if (myheight >= 1440) {
+        mytype = 7;
         // exp((10000*x)/18509 + 48633/18509)
         targetrate = Math.exp((10000*this.myqoe)/18509+48633/18509)*1024;
       }
-      if (mywidth == 1920 && myheight == 1080) {
-        type = 8;
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 8;
         // exp((10000*x)/18749 + 61618/18749)
         targetrate = Math.exp((10000*this.myqoe)/18749+61618/18749)*1024;
       }
-      if (mywidth == 1280 && myheight == 720) {
-        type = 9;
+      if (myheight < 1080) {
+        mytype = 9;
         // exp((10000*x)/17551 + 50058/17551)
         targetrate = Math.exp((10000*this.myqoe)/17551+50058/17551)*1024;
       }
     }
     if (judge == 'sports') {
       // sports
-      if (mywidth == 2560 && myheight == 1440) {
-        type = 10;
+      if (myheight >= 1440) {
+        mytype = 10;
         // exp((2500*x)/5219 + 77861/20876)
         targetrate = Math.exp((2500*this.myqoe)/5219+77861/20876)*1024;
       }
-      if (mywidth == 1920 && myheight == 1080) {
-        type = 11;
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 11;
         // exp((5000*x)/8309 + 29776/8309)
         targetrate = Math.exp((5000*this.myqoe)/8309+29776/8309)*1024;
       }
-      if (mywidth == 1280 && myheight == 720) {
-        type = 12;
+      if (myheight < 1080) {
+        mytype = 12;
         // exp((5000*x)/8271 + 26461/8271)
         targetrate = Math.exp((5000*this.myqoe)/8271+26461/8271)*1024;
       }
     }
-    console.log('type', type);
+    console.log('mytype', mytype);
     goog.asserts.assert(
         targetrate> 0,
         'target_rate must larger than 0');
@@ -1281,7 +1281,7 @@ shaka.media.StreamingEngine = class {
       // in the segment index.  This is updated via next() after each segment is
       // appended.
       const ref = mediaState.segmentIterator.current();
-      ref.changeyecinfo(bufferstate, targetrate, type, flowid);
+      ref.changeyecinfo(bufferstate, targetrate, mytype, flowid);
       return ref;
     } else if (mediaState.lastSegmentReference || bufferEnd) {
       // Something is buffered from another Stream.
@@ -1299,7 +1299,7 @@ shaka.media.StreamingEngine = class {
       if (ref == null) {
         shaka.log.warning(logPrefix, 'cannot find segment', 'endTime:', time);
       }
-      ref.changeyecinfo(bufferstate, targetrate, type, flowid);
+      ref.changeyecinfo(bufferstate, targetrate, mytype, flowid);
       return ref;
     } else {
       // Nothing is buffered.  Start at the playhead time.
@@ -1336,7 +1336,7 @@ shaka.media.StreamingEngine = class {
             'lookupTime:', lookupTime,
             'presentationTime:', presentationTime);
       }
-      ref.changeyecinfo(bufferstate, targetrate, type, flowid);
+      ref.changeyecinfo(bufferstate, targetrate, mytype, flowid);
       return ref;
     }
   }
