@@ -402,6 +402,8 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
    */
   constructor(mediaElement, dependencyInjector) {
     super();
+    /** @private {number}*/
+    this.flowid = Math.floor(Math.random()*1000);
 
     /** @private {shaka.Player.LoadMode} */
     this.loadMode_ = shaka.Player.LoadMode.NOT_LOADED;
@@ -1662,7 +1664,6 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
         this.adManager_.onDashTimedMetadata(region);
       }
     });
-
     const playerInterface = {
       networkingEngine: networkingEngine,
       filter: (manifest) => this.filterManifest_(manifest),
@@ -1682,10 +1683,14 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
       enableLowLatencyMode: () => {
         this.configure('streaming.lowLatencyMode', true);
       },
+      myflowid: this.flowid,
+      myviedo: this.video_,
+      myuri: this.assetUri_,
     };
 
     const startTime = Date.now() / 1000;
-
+    console.log('fordebug', assetUri);
+    // key place yec mark it
     return new shaka.util.AbortableOperation(/* promise= */ (async () => {
       this.manifest_ = await this.parser_.start(assetUri, playerInterface);
 
@@ -2784,6 +2789,7 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
       myobserver: this.bufferObserver_,
       myviedo: this.video_,
       myuri: this.assetUri_,
+      myflowid: this.flowid,
     };
 
     return new shaka.media.StreamingEngine(this.manifest_, playerInterface);

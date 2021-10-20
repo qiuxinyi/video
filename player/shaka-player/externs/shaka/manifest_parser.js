@@ -107,7 +107,10 @@ shaka.extern.ManifestParser = class {
  *   onError: function(!shaka.util.Error),
  *   isLowLatencyMode: function():boolean,
  *   isAutoLowLatencyMode: function():boolean,
- *   enableLowLatencyMode: function()
+ *   enableLowLatencyMode: function(),
+ *   myflowid: (?number|undefined),
+ *   myviedo: (?HTMLMediaElement|undefined),
+ *   myuri: (?string|undefined)
  * }}
  *
  * @description
@@ -137,6 +140,12 @@ shaka.extern.ManifestParser = class {
  *   Return true if auto low latency streaming mode is enabled.
  * @property {function()} enableLowLatencyMode
  *   Enable low latency streaming mode.
+ * @property {?number|undefined} myflowid
+ *   yecadd
+ * @property {?HTMLMediaElement|undefined} myviedo
+ *   yecadd
+ * @property {?string|undefined} myuri
+ *   yecadd
  * @exportDoc
  */
 shaka.extern.ManifestParser.PlayerInterface;

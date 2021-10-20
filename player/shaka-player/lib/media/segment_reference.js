@@ -202,8 +202,9 @@ shaka.media.SegmentReference = class {
    * @return {?string}
    * @export
    */
-  changeyecinfo(bufferstate, targetrate, type) {
-    this.yecaddinfo = '?mode='+bufferstate.toString();
+  changeyecinfo(bufferstate, targetrate, type, flowid) {
+    this.yecaddinfo = '?flowid='+flowid.toString();
+    this.yecaddinfo += '&mode='+bufferstate.toString();
     this.yecaddinfo += '&target_rate='+targetrate.toString();
     this.yecaddinfo += '&player_type='+type.toString();
     return this.yecaddinfo;
@@ -219,6 +220,7 @@ shaka.media.SegmentReference = class {
     // yec add
     const yecurl=[];
     yecurl[0]=this.getUrisInner()[0]+this.yecaddinfo;
+    // yecurl[0]=this.getUrisInner()[0];
     return yecurl;
     // yec add
     // return this.getUrisInner();

@@ -1030,6 +1030,8 @@ shaka.media.StreamingEngine = class {
         this.playerInterface_.myuri;
     const mybandwidth =
         this.playerInterface_.getBandwidthEstimate();
+    const myflowid =
+        this.playerInterface_.myflowid;
     shaka.log.debug('nowbandwidth', mybandwidth);
     // 开始判断
     let mywidth = myviedo['width'];
@@ -1062,7 +1064,8 @@ shaka.media.StreamingEngine = class {
         mywidth,
         myheight,
         myuri,
-        mybandwidth);
+        mybandwidth,
+        myflowid);
     if (!reference) {
       // The segment could not be found, does not exist, or is not available.
       // In any case just try again... if the manifest is incomplete or is not
@@ -1153,7 +1156,8 @@ shaka.media.StreamingEngine = class {
       mywidth,
       myheight,
       myuri,
-      mybandwidth) {
+      mybandwidth,
+      flowid) {
     const logPrefix = shaka.media.StreamingEngine.logPrefix_(mediaState);
     goog.asserts.assert(
         mediaState.stream.segmentIndex,
@@ -1275,7 +1279,7 @@ shaka.media.StreamingEngine = class {
       // in the segment index.  This is updated via next() after each segment is
       // appended.
       const ref = mediaState.segmentIterator.current();
-      ref.changeyecinfo(bufferstate, targetrate, type);
+      ref.changeyecinfo(bufferstate, targetrate, type, flowid);
       return ref;
     } else if (mediaState.lastSegmentReference || bufferEnd) {
       // Something is buffered from another Stream.
@@ -1293,7 +1297,7 @@ shaka.media.StreamingEngine = class {
       if (ref == null) {
         shaka.log.warning(logPrefix, 'cannot find segment', 'endTime:', time);
       }
-      ref.changeyecinfo(bufferstate, targetrate, type);
+      ref.changeyecinfo(bufferstate, targetrate, type, flowid);
       return ref;
     } else {
       // Nothing is buffered.  Start at the playhead time.
@@ -1330,7 +1334,7 @@ shaka.media.StreamingEngine = class {
             'lookupTime:', lookupTime,
             'presentationTime:', presentationTime);
       }
-      ref.changeyecinfo(bufferstate, targetrate, type);
+      ref.changeyecinfo(bufferstate, targetrate, type, flowid);
       return ref;
     }
   }
@@ -2111,7 +2115,8 @@ shaka.media.StreamingEngine = class {
  *   onSegmentAppended: function(),
  *   myobserver: (?shaka.media.BufferingObserver|undefined),
  *   myviedo: (?HTMLMediaElement|undefined),
- *   myuri: (?string|undefined)
+ *   myuri: (?string|undefined),
+ *   myflowid: (?number|undefined)
  * }}
  *
  * @property {function():number} getPresentationTime
@@ -2138,6 +2143,8 @@ shaka.media.StreamingEngine = class {
  * @property {?HTMLMediaElement|undefined} myviedo
  *   yecadd
  * @property {?string|undefined} myuri
+ *   yecadd
+ * @property {?number|undefined} myflowid
  */
 shaka.media.StreamingEngine.PlayerInterface;
 
