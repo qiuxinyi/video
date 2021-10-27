@@ -402,7 +402,7 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
    */
   constructor(mediaElement, dependencyInjector) {
     super();
-    /** @private {number}*/
+    /** @const {number}*/
     this.flowid = Math.floor(Math.random()*1000);
 
     /** @private {shaka.Player.LoadMode} */
@@ -682,6 +682,22 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
     if (mediaElement) {
       this.attach(mediaElement, /* initializeMediaSource= */ true);
     }
+  }
+
+  /**
+   * @return {HTMLMediaElement}
+   * @export
+   */
+  mygetVideo() {
+    return this.video_;
+  }
+
+  /**
+   * @return {?shaka.extern.AbrManager}
+   * @export
+   */
+  mygetabr() {
+    return this.abrManager_;
   }
 
   /**
@@ -2590,9 +2606,12 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
       };
       this.dispatchEvent(this.makeEvent_(name, data));
     };
-
+    // yec note it
     return new shaka.net.NetworkingEngine(
-        onProgressUpdated_, onHeadersReceived_, onDownloadFailed_);
+        onProgressUpdated_,
+        onHeadersReceived_,
+        onDownloadFailed_,
+        this);
   }
 
   /**
@@ -2737,7 +2756,6 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
     const bufferLead = shaka.media.TimeRangesUtils.bufferedAheadOf(
         this.video_.buffered,
         this.video_.currentTime);
-
     const stateChanged = this.bufferObserver_.update(bufferLead, bufferedToEnd);
 
     // If the state changed, we need to surface the event.

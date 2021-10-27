@@ -1158,7 +1158,6 @@ shaka.media.StreamingEngine = class {
       myuri,
       mybandwidth,
       flowid) {
-    console.log('myuri', myuri);
     const logPrefix = shaka.media.StreamingEngine.logPrefix_(mediaState);
     goog.asserts.assert(
         mediaState.stream.segmentIndex,
@@ -1167,7 +1166,6 @@ shaka.media.StreamingEngine = class {
     // yec add it
     let mytype = 0;
     const judge = myuri.split('/').pop().split('.')[0];
-    console.log('judge', judge);
     if (judge == 'action') {
       // action
       if (myheight >= 1440) {
@@ -1240,11 +1238,9 @@ shaka.media.StreamingEngine = class {
         targetrate = Math.exp((5000*this.myqoe)/8271+26461/8271)*1024;
       }
     }
-    console.log('mytype', mytype);
     goog.asserts.assert(
         targetrate> 0,
         'target_rate must larger than 0');
-    console.log('target_rate', targetrate);
     // qoe逻辑
     // 带宽大于target_rate,使用单位bit/s，qoe加法逻辑
     if (mybandwidth >= targetrate) {
@@ -1272,9 +1268,6 @@ shaka.media.StreamingEngine = class {
         this.qoesubcounter++;
       }
     }
-    console.log('qoeaddcounter', this.qoeaddcounter);
-    console.log('qoesubcounter', this.qoesubcounter);
-    console.log('myqoe', this.myqoe);
     // yec add it
     if (mediaState.segmentIterator) {
       // Something is buffered from the same Stream.  Use the current position

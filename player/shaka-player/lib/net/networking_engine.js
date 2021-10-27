@@ -8,6 +8,8 @@ goog.provide('shaka.net.NetworkingEngine');
 goog.provide('shaka.net.NetworkingEngine.RequestType');
 goog.provide('shaka.net.NetworkingEngine.PendingRequest');
 
+goog.requireType('shaka.Player');
+goog.require('shaka.media.TimeRangesUtils');
 goog.require('goog.Uri');
 goog.require('goog.asserts');
 goog.require('shaka.net.Backoff');
@@ -52,9 +54,18 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
    *   Called when the headers are received for a download.
    * @param {shaka.net.NetworkingEngine.OnDownloadFailed=} onDownloadFailed
    *   Called when a download fails, for any reason.
+   * @param {shaka.Player=} pInterface
+   *   yec add it
    */
-  constructor(onProgressUpdated, onHeadersReceived, onDownloadFailed) {
+  constructor(
+      onProgressUpdated,
+      onHeadersReceived,
+      onDownloadFailed,
+      pInterface) {
     super();
+
+    /** @private {?shaka.Player} */
+    this.playerInterface_ = pInterface || null;
 
     /** @private {boolean} */
     this.destroyed_ = false;
@@ -79,6 +90,12 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
 
     /** @private {boolean} */
     this.forceHTTPS_ = false;
+
+    /** @public {number} */
+    this.qoeaddcounter = 0;
+
+    /** @public {number} */
+    this.myqoe = 7;
   }
 
   /**
@@ -276,7 +293,6 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
         ObjectUtils.cloneObject(request.retryParameters) :
         shaka.net.NetworkingEngine.defaultRetryParameters();
     request.uris = ObjectUtils.cloneObject(request.uris);
-
     // Apply the registered filters to the request.每次进行请求的时候都会需要先过一遍
     // filter，同样的，response回来的时候也会经过各个response filter
     const requestFilterOperation = this.filterRequest_(type, request);
@@ -406,6 +422,142 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
    * @private
    */
   send_(type, request, backoff, index, lastError, numBytesRemainingObj) {
+    // yec add
+    // yec take place
+    const myplayerinterface = this.playerInterface_;
+    console.log('mynotcut', request.uris[index]);
+    request.uris[index]=request.uris[index].split('?')[0];
+    console.log('newindex', index);
+    console.log('newflowid', myplayerinterface.flowid);
+    const playeruri = myplayerinterface.getAssetUri();
+    const myvideo = myplayerinterface.mygetVideo();
+    const bufferLead = shaka.media.TimeRangesUtils.bufferedAheadOf(
+        myvideo.buffered,
+        myvideo.currentTime);
+    let mywidth = myvideo['width'];
+    let myheight = myvideo['height'];
+    if (mywidth == 0 && myheight == 0) {
+      // 没有指定长和宽，那么就是视频的长和宽(分辨率)
+      mywidth = myvideo['videoWidth'];
+      myheight = myvideo['videoHeight'];
+    }
+    if (mywidth == 0 && myheight != 0) {
+      // 指定了宽没指定长,我们默认采取16:9
+      mywidth = myheight/9*16;
+    }
+    if (mywidth != 0 && myheight == 0) {
+      // 指定了长没指定宽,我们默认采取16:9
+      myheight = mywidth/16*9;
+    }
+    // 判断结束
+    // 打印出来看一看
+    console.log('newmywidth', mywidth);
+    console.log('newmyheight', myheight);
+    const judge = playeruri.split('/').pop().split('.')[0];
+    let mytype = 0;
+    let targetrate = 0;
+    if (judge == 'action') {
+      // action
+      if (myheight >= 1440) {
+        mytype = 1;
+        // exp((2000*x)/4891 + 88652/24455)
+        targetrate = Math.exp((2000*this.myqoe)/4891+88652/24455)*1024;
+      }
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 2;
+        // exp((10000*x)/16611 + 16049/5537)
+        targetrate = Math.exp((10000*this.myqoe)/16611+16049/5537)*1024;
+      }
+      if (myheight < 1080) {
+        mytype = 3;
+        // exp((10000*x)/16927 + 45966/16927)
+        targetrate = Math.exp((10000*this.myqoe)/16927+45966/16927)*1024;
+      }
+    }
+    if (judge == 'food') {
+      // foods
+      if (myheight >= 1440) {
+        // exp((5000*x)/12161 + 40761/12161)
+        mytype = 4;
+        targetrate = Math.exp((5000*this.myqoe)/12161+40761/12161)*1024;
+      }
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 5;
+        // exp((2000*x)/3487 + 51723/17435)
+        targetrate = Math.exp((2000*this.myqoe)/3487+51723/17435)*1024;
+      }
+      if (myheight < 1080) {
+        mytype = 6;
+        // exp((10000*x)/20071 + 58200/20071)
+        targetrate = Math.exp((10000*this.myqoe)/20071+58200/20071)*1024;
+      }
+    }
+    if (judge == 'bbb') {
+      // cartoons
+      if (myheight >= 1440) {
+        mytype = 7;
+        // exp((10000*x)/18509 + 48633/18509)
+        targetrate = Math.exp((10000*this.myqoe)/18509+48633/18509)*1024;
+      }
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 8;
+        // exp((10000*x)/18749 + 61618/18749)
+        targetrate = Math.exp((10000*this.myqoe)/18749+61618/18749)*1024;
+      }
+      if (myheight < 1080) {
+        mytype = 9;
+        // exp((10000*x)/17551 + 50058/17551)
+        targetrate = Math.exp((10000*this.myqoe)/17551+50058/17551)*1024;
+      }
+    }
+    if (judge == 'sports') {
+      // sports
+      if (myheight >= 1440) {
+        mytype = 10;
+        // exp((2500*x)/5219 + 77861/20876)
+        targetrate = Math.exp((2500*this.myqoe)/5219+77861/20876)*1024;
+      }
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 11;
+        // exp((5000*x)/8309 + 29776/8309)
+        targetrate = Math.exp((5000*this.myqoe)/8309+29776/8309)*1024;
+      }
+      if (myheight < 1080) {
+        mytype = 12;
+        // exp((5000*x)/8271 + 26461/8271)
+        targetrate = Math.exp((5000*this.myqoe)/8271+26461/8271)*1024;
+      }
+    }
+    console.log('newmytype', mytype);
+    // qoe逻辑
+    // 带宽大于target_rate,使用单位bit/s，qoe加法逻辑
+    let mybandwidth=0;
+    if (myplayerinterface.mygetabr()!=null) {
+      mybandwidth=myplayerinterface.mygetabr().getBandwidthEstimate();
+    }
+    console.log('newmybandwidth', mybandwidth);
+    if (mybandwidth >= targetrate) {
+      // 如果qoe加法计数器大于等于1，则增加qoe
+      if (this.qoeaddcounter >= 1) {
+        this.myqoe = Math.min(this.myqoe+1, 9);
+        this.qoeaddcounter = 0;
+      } else {
+        // 如果qoe加法计数器为0，计数+1
+        this.qoeaddcounter++;
+      }
+    } else {
+      this.myqoe = Math.max(5, this.myqoe-1);
+    }
+    console.log('qoeaddcounter', this.qoeaddcounter);
+    console.log('myqoe', this.myqoe);
+    // 添加信息
+    const buffermode = bufferLead > 5 ? 2 : 1;
+    let myaddinfo='?flowid='+myplayerinterface.flowid.toString();
+    myaddinfo+='&mode='+buffermode.toString();
+    myaddinfo+='&player_type='+mytype.toString();
+    myaddinfo+='&target_rate='+targetrate.toString();
+    request.uris[index]+=myaddinfo+'&debug='+bufferLead.toString();
+    console.log('myadddebug', request.uris[index]);
     if (this.forceHTTPS_) {
       request.uris[index] = request.uris[index].replace('http://', 'https://');
     }

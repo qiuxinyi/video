@@ -2705,7 +2705,6 @@ shaka.hls.HlsParser = class {
     // yec add it
     let mytype = 0;
     const judge = myuri.split('/').pop().split('.')[0];
-    console.log('judge', judge);
     if (judge == 'action') {
       // action
       if (myheight >= 1440) {
@@ -2778,14 +2777,9 @@ shaka.hls.HlsParser = class {
         targetrate = Math.exp((5000*this.myqoe)/8271+26461/8271)*1024;
       }
     }
-    console.log('mytype', mytype);
-    console.log('target_rate', targetrate);
-    console.log('myqoe', this.myqoe);
     // yec add it
     // 判断结束
     // 打印出来看一看
-    shaka.log.debug('mywidth', mywidth);
-    shaka.log.debug('myheight', myheight);
     // 根据窗口来判断设备种类
     request.uris[0] += '?flowid='+flowid.toString();
     // 开始处于很迫切想观看的状态，所以很迫切
@@ -2793,7 +2787,6 @@ shaka.hls.HlsParser = class {
     request.uris[0] += '&target_rate='+targetrate.toString();
     request.uris[0] += '&player_type='+mytype.toString();
     // yec add
-    console.log('yeccdebug', request.uris);
     if (!this.operationManager_) {
       throw new shaka.util.Error(
           shaka.util.Error.Severity.CRITICAL,
