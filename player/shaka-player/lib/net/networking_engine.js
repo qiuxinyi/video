@@ -92,10 +92,16 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
     this.forceHTTPS_ = false;
 
     /** @public {number} */
+    this.qoesubcounter = 0;
+
+    /** @public {number} */
     this.qoeaddcounter = 0;
 
     /** @public {number} */
     this.myqoe = 7;
+
+    /** @public {number} */
+    this.buffermode = 1;
   }
 
   /**
@@ -529,16 +535,15 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
       }
     }
     console.log('newmytype', mytype);
-    // qoe逻辑
-    // 带宽大于target_rate,使用单位bit/s，qoe加法逻辑
     let mybandwidth=0;
     if (myplayerinterface.mygetabr()!=null) {
       mybandwidth=myplayerinterface.mygetabr().getBandwidthEstimate();
     }
     console.log('newmybandwidth', mybandwidth);
+    // qoe逻辑
     if (mybandwidth >= targetrate) {
       // 如果qoe加法计数器大于等于1，则增加qoe
-      if (this.qoeaddcounter >= 1) {
+      if ((this.qoeaddcounter >= 1&&this.myqoe<8)||this.qoeaddcounter >=2) {
         this.myqoe = Math.min(this.myqoe+1, 9);
         this.qoeaddcounter = 0;
       } else {
@@ -546,14 +551,29 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
         this.qoeaddcounter++;
       }
     } else {
-      this.myqoe = Math.max(5, this.myqoe-1);
+      // 如果qoe减法计数器大于等于1，则降低qoe
+      if ((this.qoesubcounter >= 1&&this.myqoe>6)||this.qoesubcounter >= 2) {
+        this.myqoe = Math.max(this.myqoe-1, 7);
+        this.qoesubcounter = 0;
+      } else {
+        // 如果qoe减法计数器为0，计数+1
+        this.qoesubcounter++;
+      }
     }
     console.log('qoeaddcounter', this.qoeaddcounter);
     console.log('myqoe', this.myqoe);
     // 添加信息
-    const buffermode = bufferLead > 5 ? 2 : 1;
+    if (this.buffermode==1) {
+      if (bufferLead > 7) {
+        this.buffermode=2;
+      }
+    } else {
+      if (bufferLead < 5) {
+        this.buffermode=1;
+      }
+    }
     let myaddinfo='?flowid='+myplayerinterface.flowid.toString();
-    myaddinfo+='&mode='+buffermode.toString();
+    myaddinfo+='&mode='+this.buffermode.toString();
     myaddinfo+='&player_type='+mytype.toString();
     myaddinfo+='&target_rate='+targetrate.toString();
     request.uris[index]+=myaddinfo+'&debug='+bufferLead.toString();
