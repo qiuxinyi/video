@@ -10,7 +10,6 @@
  */
 
 goog.provide('shaka.media.StreamingEngine');
-
 goog.require('goog.asserts');
 goog.require('shaka.log');
 goog.require('shaka.media.InitSegmentReference');
@@ -1101,7 +1100,6 @@ shaka.media.StreamingEngine = class {
     goog.asserts.assert(
         mediaState.stream.segmentIndex,
         'segment index should have been generated already');
-
     if (mediaState.segmentIterator) {
       // Something is buffered from the same Stream.  Use the current position
       // in the segment index.  This is updated via next() after each segment is
@@ -1957,7 +1955,6 @@ shaka.media.StreamingEngine = class {
  * @property {function()} onManifestUpdate
  *   Called when an embedded 'emsg' box should trigger a manifest update.
  * @property {function()} onSegmentAppended
- *   Called after a segment is successfully appended to a MediaSource.
  */
 shaka.media.StreamingEngine.PlayerInterface;
 

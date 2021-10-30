@@ -402,6 +402,8 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
    */
   constructor(mediaElement, dependencyInjector) {
     super();
+    /** @const {number}*/
+    this.flowid = Math.floor(Math.random()*1000);
 
     /** @private {shaka.Player.LoadMode} */
     this.loadMode_ = shaka.Player.LoadMode.NOT_LOADED;
@@ -680,6 +682,22 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
     if (mediaElement) {
       this.attach(mediaElement, /* initializeMediaSource= */ true);
     }
+  }
+
+  /**
+   * @return {HTMLMediaElement}
+   * @export
+   */
+  mygetVideo() {
+    return this.video_;
+  }
+
+  /**
+   * @return {?shaka.extern.AbrManager}
+   * @export
+   */
+  mygetabr() {
+    return this.abrManager_;
   }
 
   /**
@@ -1685,7 +1703,6 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
     };
 
     const startTime = Date.now() / 1000;
-
     return new shaka.util.AbortableOperation(/* promise= */ (async () => {
       this.manifest_ = await this.parser_.start(assetUri, playerInterface);
 
@@ -2585,9 +2602,11 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
       };
       this.dispatchEvent(this.makeEvent_(name, data));
     };
-
     return new shaka.net.NetworkingEngine(
-        onProgressUpdated_, onHeadersReceived_, onDownloadFailed_);
+        onProgressUpdated_,
+        onHeadersReceived_,
+        onDownloadFailed_,
+        this);
   }
 
   /**

@@ -8,6 +8,7 @@ goog.provide('shaka.net.NetworkingEngine');
 goog.provide('shaka.net.NetworkingEngine.RequestType');
 goog.provide('shaka.net.NetworkingEngine.PendingRequest');
 
+goog.requireType('shaka.Player');
 goog.require('goog.Uri');
 goog.require('goog.asserts');
 goog.require('shaka.net.Backoff');
@@ -52,9 +53,18 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
    *   Called when the headers are received for a download.
    * @param {shaka.net.NetworkingEngine.OnDownloadFailed=} onDownloadFailed
    *   Called when a download fails, for any reason.
+   * @param {shaka.Player=} pInterface
+   *   yec add it
    */
-  constructor(onProgressUpdated, onHeadersReceived, onDownloadFailed) {
+  constructor(
+      onProgressUpdated,
+      onHeadersReceived,
+      onDownloadFailed,
+      pInterface) {
     super();
+
+    /** @private {?shaka.Player} */
+    this.playerInterface_ = pInterface || null;
 
     /** @private {boolean} */
     this.destroyed_ = false;
@@ -276,7 +286,6 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
         ObjectUtils.cloneObject(request.retryParameters) :
         shaka.net.NetworkingEngine.defaultRetryParameters();
     request.uris = ObjectUtils.cloneObject(request.uris);
-
     // Apply the registered filters to the request.每次进行请求的时候都会需要先过一遍
     // filter，同样的，response回来的时候也会经过各个response filter
     const requestFilterOperation = this.filterRequest_(type, request);
@@ -406,6 +415,91 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
    * @private
    */
   send_(type, request, backoff, index, lastError, numBytesRemainingObj) {
+    // yec add
+    // yec take place
+    const myplayerinterface = this.playerInterface_;
+    console.log('newflowid', myplayerinterface.flowid);
+    const playeruri = myplayerinterface.getAssetUri();
+    const myvideo = myplayerinterface.mygetVideo();
+    let mywidth = myvideo['width'];
+    let myheight = myvideo['height'];
+    if (mywidth == 0 && myheight == 0) {
+      // 没有指定长和宽，那么就是视频的长和宽(分辨率)
+      mywidth = myvideo['videoWidth'];
+      myheight = myvideo['videoHeight'];
+    }
+    if (mywidth == 0 && myheight != 0) {
+      // 指定了宽没指定长,我们默认采取16:9
+      mywidth = myheight/9*16;
+    }
+    if (mywidth != 0 && myheight == 0) {
+      // 指定了长没指定宽,我们默认采取16:9
+      myheight = mywidth/16*9;
+    }
+    // 判断结束
+    // 打印出来看一看
+    console.log('newmywidth', mywidth);
+    console.log('newmyheight', myheight);
+    const judge = playeruri.split('/').pop().split('.')[0];
+    let mytype = 0;
+    if (judge == 'action') {
+      // action
+      if (myheight >= 1440) {
+        mytype = 1;
+      }
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 2;
+      }
+      if (myheight < 1080) {
+        mytype = 3;
+      }
+    }
+    if (judge == 'food') {
+      // foods
+      if (myheight >= 1440) {
+        mytype = 4;
+      }
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 5;
+      }
+      if (myheight < 1080) {
+        mytype = 6;
+      }
+    }
+    if (judge == 'bbb') {
+      // cartoons
+      if (myheight >= 1440) {
+        mytype = 7;
+      }
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 8;
+      }
+      if (myheight < 1080) {
+        mytype = 9;
+      }
+    }
+    if (judge == 'sports') {
+      // sports
+      if (myheight >= 1440) {
+        mytype = 10;
+      }
+      if (myheight >= 1080 && myheight < 1440) {
+        mytype = 11;
+      }
+      if (myheight < 1080) {
+        mytype = 12;
+      }
+    }
+    console.log('newmytype', mytype);
+    let mybandwidth=0;
+    if (myplayerinterface.mygetabr()!=null) {
+      mybandwidth=myplayerinterface.mygetabr().getBandwidthEstimate();
+    }
+    let myaddinfo='?flow_key='+myplayerinterface.flowid.toString();
+    myaddinfo+='&rate='+mybandwidth.toString();
+    myaddinfo+='&player_type='+mytype.toString();
+    request.uris[index]+=myaddinfo;
+    // yec add
     if (this.forceHTTPS_) {
       request.uris[index] = request.uris[index].replace('http://', 'https://');
     }

@@ -2681,7 +2681,6 @@ shaka.hls.HlsParser = class {
           shaka.util.Error.Category.PLAYER,
           shaka.util.Error.Code.OPERATION_ABORTED);
     }
-
     const op = this.playerInterface_.networkingEngine.request(type, request);
     this.operationManager_.manage(op);
 
