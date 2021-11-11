@@ -419,6 +419,7 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
     // yec take place
     const myplayerinterface = this.playerInterface_;
     console.log('newflowid', myplayerinterface.flowid);
+    request.uris[index]=request.uris[index].split('?')[0];
     const playeruri = myplayerinterface.getAssetUri();
     const myvideo = myplayerinterface.mygetVideo();
     let mywidth = myvideo['width'];
