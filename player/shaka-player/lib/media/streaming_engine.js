@@ -1051,8 +1051,6 @@ shaka.media.StreamingEngine = class {
     }
     // 判断结束
     // 打印出来看一看
-    shaka.log.debug('mywidth', mywidth);
-    shaka.log.debug('myheight', myheight);
     // 根据窗口来判断设备种类
     // yec add
     // reference中包含了请求url等信息
