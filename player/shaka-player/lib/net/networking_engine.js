@@ -576,7 +576,7 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
       const downrate = this.qoesubcounter*0.25/16*(Math.pow(this.myqoe-7, 3)+8);
       // 满足下降概率
       if (Math.random()<downrate) {
-        this.myqoe += (goal-this.myqoe)*0.75*(1+Math.exp(-this.qoesubcounter));
+        this.myqoe += (goal-this.myqoe)*0.75*1.0/(1+Math.exp(-this.qoesubcounter));
         this.qoesubcounter=1;
       } else {
         // 没有下降，则计数器增加
@@ -592,7 +592,7 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
       const uprate = this.qoeaddcounter*0.25/16*(-Math.pow(this.myqoe-7, 3)+8);
       // 满足上升概率
       if (Math.random()<uprate) {
-        this.myqoe += (goal-this.myqoe)*0.75*(1+Math.exp(-this.qoeaddcounter));
+        this.myqoe += (goal-this.myqoe)*0.75*1.0/(1+Math.exp(-this.qoeaddcounter));
         this.qoeaddcounter=1;
       } else {
         // 没有上升，则计数器增加
