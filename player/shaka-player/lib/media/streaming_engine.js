@@ -1233,23 +1233,18 @@ shaka.media.StreamingEngine = class {
     goog.asserts.assert(
         targetrate> 0,
         'target_rate must larger than 0');
-    // qoe逻辑
-    // 带宽大于target_rate,使用单位bit/s，qoe加法逻辑
+    // qoe logic
     if (mybandwidth >= targetrate) {
-      // 如果qoe减法计数器大于0，则重置它
       if (this.qoesubcounter > 0) {
         this.qoesubcounter = 0;
       }
-      // 如果qoe加法计数器大于等于1，则增加qoe
       if (this.qoeaddcounter >= 1) {
         this.myqoe = Math.min(this.myqoe+1, 9);
         this.qoeaddcounter = 0;
       } else {
-        // 如果qoe加法计数器为0，计数+1
         this.qoeaddcounter++;
       }
     } else {
-      // qoe减法逻辑
       if (this.qoeaddcounter > 0) {
         this.qoesubcounter = 0;
       }
@@ -1307,8 +1302,6 @@ shaka.media.StreamingEngine = class {
             mediaState.segmentIterator.next().value;
       }
       if (!ref) {
-        // 如果找不到reference（下一个要播放的信息），那么就要初始化segmentIterator，这样就能通过
-        // 遍历找到啦
         // If we can't find a valid segment with the drifted time, look for a
         // segment with the presentation time.
         mediaState.segmentIterator =
@@ -1333,7 +1326,7 @@ shaka.media.StreamingEngine = class {
    * beforehand. Schedules another update after completing successfully.
    *
    * @param {!shaka.media.StreamingEngine.MediaState_} mediaState
-   * @param {number} presentationTime 目前可以播放的时间长度
+   * @param {number} presentationTime
    * @param {!shaka.media.SegmentReference} reference
    * @private
    */
@@ -1992,7 +1985,7 @@ shaka.media.StreamingEngine = class {
 
   /**
    * Schedules |mediaState|'s next update.
-   *是调度多久进行一次segment的下载
+   *
    * @param {!shaka.media.StreamingEngine.MediaState_} mediaState
    * @param {number} delay The delay in seconds.
    * @private
