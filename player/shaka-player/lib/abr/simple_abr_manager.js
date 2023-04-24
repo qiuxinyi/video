@@ -116,8 +116,6 @@ shaka.abr.SimpleAbrManager = class {
    * @export
    */
   chooseVariant() {
-    // 判断一下iterm里所标记的带宽是否能符合，如果可以就选择，因为iterm是从低到高进行遍历的
-    // 所以最后会选择符合的带宽最大的iterm进行播放
     const SimpleAbrManager = shaka.abr.SimpleAbrManager;
 
     // Get sorted Variants.

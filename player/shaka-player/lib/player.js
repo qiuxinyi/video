@@ -3,9 +3,7 @@
  * Copyright 2016 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-// 表示自己能够提供的模块名称
 goog.provide('shaka.Player');
-// 表示自己需要哪些模块
 goog.require('goog.asserts');
 goog.require('shaka.Deprecate');
 goog.require('shaka.log');
@@ -1706,7 +1704,7 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
 
     const startTime = Date.now() / 1000;
     console.log('fordebug', assetUri);
-    // key place yec mark it
+    // key place Themis mark it
     return new shaka.util.AbortableOperation(/* promise= */ (async () => {
       this.manifest_ = await this.parser_.start(assetUri, playerInterface);
 
@@ -2606,7 +2604,7 @@ shaka.Player = class extends shaka.util.FakeEventTarget {
       };
       this.dispatchEvent(this.makeEvent_(name, data));
     };
-    // yec note it
+    //  note it
     return new shaka.net.NetworkingEngine(
         onProgressUpdated_,
         onHeadersReceived_,

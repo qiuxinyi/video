@@ -55,7 +55,7 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
    * @param {shaka.net.NetworkingEngine.OnDownloadFailed=} onDownloadFailed
    *   Called when a download fails, for any reason.
    * @param {shaka.Player=} pInterface
-   *   yec add it
+   *   themis add it
    */
   constructor(
       onProgressUpdated,
@@ -428,8 +428,7 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
    * @private
    */
   send_(type, request, backoff, index, lastError, numBytesRemainingObj) {
-    // yec add
-    // yec take place
+    // themis add
     const myplayerinterface = this.playerInterface_;
     request.uris[index]=request.uris[index].split('?')[0];
     const playeruri = myplayerinterface.getAssetUri();
@@ -440,20 +439,15 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
     let mywidth = myvideo['width'];
     let myheight = myvideo['height'];
     if (mywidth == 0 && myheight == 0) {
-      // 没有指定长和宽，那么就是视频的长和宽(分辨率)
       mywidth = myvideo['videoWidth'];
       myheight = myvideo['videoHeight'];
     }
     if (mywidth == 0 && myheight != 0) {
-      // 指定了宽没指定长,我们默认采取16:9
       mywidth = myheight/9*16;
     }
     if (mywidth != 0 && myheight == 0) {
-      // 指定了长没指定宽,我们默认采取16:9
       myheight = mywidth/16*9;
     }
-    // 判断结束
-    // 打印出来看一看
     console.log('newmywidth', mywidth);
     console.log('newmyheight', myheight);
     const judge = playeruri.split('/').pop().split('.')[0];
@@ -470,22 +464,16 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
       // action
       if (myheight >= 1440) {
         mytype = 1;
-        // action 4k 2.4455ln(x)-8.8652
-        // exp((2000*x)/4891 + 88652/24455)
         targetrate = Math.exp((2000*this.myqoe)/4891+88652/24455)*1024;
         goal = 2.4455*Math.log(mybandwidth)-8.8652;
       }
       if (myheight >= 1080 && myheight < 1440) {
         mytype = 2;
-        // action 2k 1.6618*ln(x)-5.9552
-        // exp((10000*x)/16611 + 16049/5537)
         targetrate = Math.exp((10000*this.myqoe)/16611+16049/5537)*1024;
         goal = 1.6618*Math.log(mybandwidth)-5.9552;
       }
       if (myheight < 1080) {
         mytype = 3;
-        // action 720p 1.6927*ln(x)-4.5966
-        // exp((10000*x)/16927 + 45966/16927)
         targetrate = Math.exp((10000*this.myqoe)/16927+45966/16927)*1024;
         goal = 1.6927*Math.log(mybandwidth)-4.5966;
       }
@@ -494,22 +482,16 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
       // foods
       if (myheight >= 1440) {
         mytype = 4;
-        // foood 4k 2.4322*ln(x)-8.1522
-        // exp((5000*x)/12161 + 40761/12161)
         targetrate = Math.exp((5000*this.myqoe)/12161+40761/12161)*1024;
         goal = 2.4322*Math.log(mybandwidth)-8.1522;
       }
       if (myheight >= 1080 && myheight < 1440) {
         mytype = 5;
-        // food 2k 1.7435*ln(x)-5.1723
-        // exp((2000*x)/3487 + 51723/17435)
         targetrate = Math.exp((2000*this.myqoe)/3487+51723/17435)*1024;
         goal = 1.7435*Math.log(mybandwidth)-5.1723;
       }
       if (myheight < 1080) {
         mytype = 6;
-        // food 720p 2.0071*ln(x)-5.82
-        // exp((10000*x)/20071 + 58200/20071)
         targetrate = Math.exp((10000*this.myqoe)/20071+58200/20071)*1024;
         goal = 2.0071*Math.log(mybandwidth)-5.82;
       }
@@ -518,20 +500,14 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
       // cartoons
       if (myheight >= 1440) {
         mytype = 7;
-        // bbb 4k 1.8509*ln(x)-4.8633
-        // exp((10000*x)/18509 + 48633/18509)
         targetrate = Math.exp((10000*this.myqoe)/18509+48633/18509)*1024;
       }
       if (myheight >= 1080 && myheight < 1440) {
         mytype = 8;
-        // bbb 2k 1.8749ln(x)-6.1618
-        // exp((10000*x)/18749 + 61618/18749)
         targetrate = Math.exp((10000*this.myqoe)/18749+61618/18749)*1024;
       }
       if (myheight < 1080) {
         mytype = 9;
-        // bbb 720p 1.7551*ln(x)-5.0059
-        // exp((10000*x)/17551 + 50058/17551)
         targetrate = Math.exp((10000*this.myqoe)/17551+50058/17551)*1024;
       }
     }
@@ -539,20 +515,14 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
       // sports
       if (myheight >= 1440) {
         mytype = 10;
-        // sports 4k 2.0876*ln(x)-7.7861
-        // exp((2500*x)/5219 + 77861/20876)
         targetrate = Math.exp((2500*this.myqoe)/5219+77861/20876)*1024;
       }
       if (myheight >= 1080 && myheight < 1440) {
         mytype = 11;
-        // sports 2k 1.6618*ln(x)-5.9552
-        // exp((5000*x)/8309 + 29776/8309)
         targetrate = Math.exp((5000*this.myqoe)/8309+29776/8309)*1024;
       }
       if (myheight < 1080) {
         mytype = 12;
-        // sports 720p 1.6542ln(x)-5.2922
-        // exp((5000*x)/8271 + 26461/8271)
         targetrate = Math.exp((5000*this.myqoe)/8271+26461/8271)*1024;
       }
     }
@@ -560,49 +530,43 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
     goal=Math.min(9, goal);
     goal=Math.max(5, goal);
     console.log('mygoal', goal);
-    // qoe逻辑
-    // 如果targetrate在90-110之间不改变我们的qoe
+    // qoe logic
+    // 90 < target_rate < 110 do not change qoe
     if (targetrate<mybandwidth*1.1 &&
        targetrate>mybandwidth*0.9 && mybandwidth==0) {
-      // 趋于稳定，把计数器归位
       this.qoeaddcounter=1;
       this.qoesubcounter=1;
     }
-    // target rate 比当前带宽要大,则考虑适当降低qoe
+    // target rate is larger
     if (targetrate>=mybandwidth*1.1 && mybandwidth!=0) {
-      // 考虑下降，则把增加计数器置1
       this.qoeaddcounter = 1;
-      // 计算下降的概率
       const downrate = this.qoesubcounter*0.25/16*(Math.pow(this.myqoe-7, 3)+8);
-      // 满足下降概率
+      // Satisfy the down probability
       if (Math.random()<downrate) {
-        this.myqoe += (goal-this.myqoe)*0.75*1.0/(1+Math.exp(-this.qoesubcounter));
+        const tp = (goal-this.myqoe)*0.75*1.0/(1+Math.exp(-this.qoesubcounter));
+        this.myqoe+= tp;
         this.qoesubcounter=1;
       } else {
-        // 没有下降，则计数器增加
         this.qoesubcounter += 1;
       }
     }
-    console.log('yec is using');
-    // target rate 比当前带宽要小，则考虑适当提高qoe
+    console.log('themis is using');
+    // target rate is smaller
     if (targetrate<=mybandwidth*0.9 && mybandwidth!=0) {
-      // 考虑升高，则把减少计数器置为1
       this.qoesubcounter=1;
-      // 计算升高的概率
       const uprate = this.qoeaddcounter*0.25/16*(-Math.pow(this.myqoe-7, 3)+8);
-      // 满足上升概率
       if (Math.random()<uprate) {
-        this.myqoe += (goal-this.myqoe)*0.75*1.0/(1+Math.exp(-this.qoeaddcounter));
+        const tp = (goal-this.myqoe)*0.75*1.0/(1+Math.exp(-this.qoeaddcounter));
+        this.myqoe+= tp;
         this.qoeaddcounter=1;
       } else {
-        // 没有上升，则计数器增加
         this.qoeaddcounter += 1;
       }
     }
     this.myqoe=Math.max(5, this.myqoe);
     this.myqoe=Math.min(9, this.myqoe);
-    // qoe 逻辑结束
-    // 添加信息
+    // qoe logic end
+    // add information
     if (this.buffermode==1) {
       if (bufferLead > 7) {
         this.buffermode=2;
@@ -682,7 +646,6 @@ shaka.net.NetworkingEngine = class extends shaka.util.FakeEventTarget {
       }
 
       startTimeMs = Date.now();
-      // 表示这个函数只是用来获取segment的
       const segment = shaka.net.NetworkingEngine.RequestType.SEGMENT;
 
       const progressUpdated = (time, bytes, numBytesRemaining) => {

@@ -1020,7 +1020,7 @@ shaka.media.StreamingEngine = class {
 
     const bufferEnd =
         this.playerInterface_.mediaSourceEngine.bufferEnd(mediaState.type);
-    // yec add
+    // themis add
     const myobserver =
         this.playerInterface_.myobserver;
     const bufferstate = myobserver.mode;
@@ -1033,27 +1033,21 @@ shaka.media.StreamingEngine = class {
     const myflowid =
         this.playerInterface_.myflowid;
     shaka.log.debug('nowbandwidth', mybandwidth);
-    // 开始判断
     let mywidth = myvideo['width'];
     let myheight = myvideo['height'];
     if (mywidth == 0 && myheight == 0) {
-      // 没有指定长和宽，那么就是视频的长和宽(分辨率)
       mywidth = myvideo['videoWidth'];
       myheight = myvideo['videoHeight'];
     }
     if (mywidth == 0 && myheight != 0) {
-      // 指定了宽没指定长,我们默认采取16:9
       mywidth = myheight/9*16;
     }
     if (mywidth != 0 && myheight == 0) {
-      // 指定了长没指定宽,我们默认采取16:9
       myheight = mywidth/16*9;
     }
-    // 判断结束
-    // 打印出来看一看
-    // 根据窗口来判断设备种类
-    // yec add
-    // reference中包含了请求url等信息
+
+    // themis add
+
     const reference = this.getSegmentReferenceNeeded_(
         mediaState,
         presentationTime,
@@ -1161,7 +1155,7 @@ shaka.media.StreamingEngine = class {
         mediaState.stream.segmentIndex,
         'segment index should have been generated already');
     let targetrate = 0;
-    // yec add it
+    // themis add it
     let mytype = 0;
     const judge = myuri.split('/').pop().split('.')[0];
     if (judge == 'action') {
@@ -1266,13 +1260,13 @@ shaka.media.StreamingEngine = class {
         this.qoesubcounter++;
       }
     }
-    // yec add it
+    // themis add it
     if (mediaState.segmentIterator) {
       // Something is buffered from the same Stream.  Use the current position
       // in the segment index.  This is updated via next() after each segment is
       // appended.
       const ref = mediaState.segmentIterator.current();
-      ref.changeyecinfo(bufferstate, targetrate, mytype, flowid);
+      ref.changeinfo(bufferstate, targetrate, mytype, flowid);
       return ref;
     } else if (mediaState.lastSegmentReference || bufferEnd) {
       // Something is buffered from another Stream.
@@ -1290,7 +1284,7 @@ shaka.media.StreamingEngine = class {
       if (ref == null) {
         shaka.log.warning(logPrefix, 'cannot find segment', 'endTime:', time);
       }
-      ref.changeyecinfo(bufferstate, targetrate, mytype, flowid);
+      ref.changeinfo(bufferstate, targetrate, mytype, flowid);
       return ref;
     } else {
       // Nothing is buffered.  Start at the playhead time.
@@ -1327,7 +1321,7 @@ shaka.media.StreamingEngine = class {
             'lookupTime:', lookupTime,
             'presentationTime:', presentationTime);
       }
-      ref.changeyecinfo(bufferstate, targetrate, mytype, flowid);
+      ref.changeinfo(bufferstate, targetrate, mytype, flowid);
       return ref;
     }
   }
@@ -2130,13 +2124,13 @@ shaka.media.StreamingEngine = class {
  * @property {function()} onManifestUpdate
  *   Called when an embedded 'emsg' box should trigger a manifest update.
  * @property {function()} onSegmentAppended
- *   yecadd
+ *   themis add
  * @property {?shaka.media.BufferingObserver|undefined} myobserver
- *   yecadd
+ *   themis add
  * @property {?HTMLMediaElement|undefined} myvideo
- *   yecadd
+ *   themis add
  * @property {?string|undefined} myuri
- *   yecadd
+ *   themis add
  * @property {?number|undefined} myflowid
  */
 shaka.media.StreamingEngine.PlayerInterface;

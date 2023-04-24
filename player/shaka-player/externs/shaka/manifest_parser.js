@@ -141,11 +141,11 @@ shaka.extern.ManifestParser = class {
  * @property {function()} enableLowLatencyMode
  *   Enable low latency streaming mode.
  * @property {?number|undefined} myflowid
- *   yecadd
+ *   Themis add
  * @property {?HTMLMediaElement|undefined} myvideo
- *   yecadd
+ *   Themis add
  * @property {?string|undefined} myuri
- *   yecadd
+ *   Themis add
  * @exportDoc
  */
 shaka.extern.ManifestParser.PlayerInterface;

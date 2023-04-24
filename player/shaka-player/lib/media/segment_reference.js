@@ -193,21 +193,21 @@ shaka.media.SegmentReference = class {
     this.tilesLayout = tilesLayout;
 
     /** @type {?string} */
-    this.yecaddinfo = '';
+    this.addinfo = '';
   }
 
   /**
-   * yec add it to change the uri
+   * add it to change the uri
    *
    * @return {?string}
    * @export
    */
-  changeyecinfo(bufferstate, targetrate, type, flowid) {
-    this.yecaddinfo = '?flowid='+flowid.toString();
-    this.yecaddinfo += '&mode='+bufferstate.toString();
-    this.yecaddinfo += '&target_rate='+targetrate.toString();
-    this.yecaddinfo += '&player_type='+type.toString();
-    return this.yecaddinfo;
+  changeinfo(bufferstate, targetrate, type, flowid) {
+    this.addinfo = '?flowid='+flowid.toString();
+    this.addinfo += '&mode='+bufferstate.toString();
+    this.addinfo += '&target_rate='+targetrate.toString();
+    this.addinfo += '&player_type='+type.toString();
+    return this.addinfo;
   }
 
   /**
@@ -217,13 +217,9 @@ shaka.media.SegmentReference = class {
    * @export
    */
   getUris() {
-    // yec add
-    const yecurl=[];
-    yecurl[0]=this.getUrisInner()[0]+this.yecaddinfo;
-    // yecurl[0]=this.getUrisInner()[0];
-    return yecurl;
-    // yec add
-    // return this.getUrisInner();
+    const url=[];
+    url[0]=this.getUrisInner()[0]+this.addinfo;
+    return url;
   }
 
   /**
